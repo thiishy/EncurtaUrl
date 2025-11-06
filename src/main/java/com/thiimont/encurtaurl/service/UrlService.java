@@ -72,7 +72,7 @@ public class UrlService {
 
             try {
                 urlRepository.save(url);
-                return new UrlResponseDTO(url.getId(), url.getShortenedUrl(), url.getCreatedAt());
+                return new UrlResponseDTO(url.getId(), url.getTargetUrl(), url.getShortenedUrl(), url.getCreatedAt());
             } catch(ConstraintViolationException e) {
                 continue;
             }
@@ -90,7 +90,7 @@ public class UrlService {
         List<Url> urls = urlRepository.findAll();
 
         return urls.stream()
-                .map(u -> new UrlResponseDTO(u.getId(), u.getShortenedUrl(), u.getCreatedAt()))
+                .map(u -> new UrlResponseDTO(u.getId(), u.getTargetUrl(), u.getShortenedUrl(), u.getCreatedAt()))
                 .collect(Collectors.toList());
     }
 }
