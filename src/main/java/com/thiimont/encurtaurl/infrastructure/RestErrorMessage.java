@@ -1,14 +1,5 @@
 package com.thiimont.encurtaurl.infrastructure;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
-@AllArgsConstructor
-@Getter
-@Setter
-public class RestErrorMessage {
-    private HttpStatus status;
-    private String message;
-}
+public record RestErrorMessage(HttpStatus status, String message) {}

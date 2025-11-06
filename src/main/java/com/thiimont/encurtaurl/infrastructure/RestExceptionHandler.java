@@ -17,7 +17,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidUrlException.class)
-    public ResponseEntity<RestErrorMessage> InvalidUrlErrorHandler(InvalidUrlException exception) {
+    public ResponseEntity<RestErrorMessage> invalidUrlErrorHandler(InvalidUrlException exception) {
         RestErrorMessage errorResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST, exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
