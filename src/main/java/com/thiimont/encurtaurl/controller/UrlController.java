@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -19,9 +20,15 @@ public class UrlController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UrlResponseDTO> register(@RequestBody UrlRequestDTO request) {
+    public ResponseEntity<UrlResponseDTO> registerUrl(@RequestBody UrlRequestDTO request) {
         UrlResponseDTO response = urlService.shortenUrl(request.targetUrl());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/urls")
+    public ResponseEntity<List<UrlResponseDTO>> listUrls() {
+        List<UrlResponseDTO> response = urlService.getAllUrls();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{shortCode}")

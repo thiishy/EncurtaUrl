@@ -15,6 +15,7 @@ import com.thiimont.encurtaurl.exception.UrlNotFoundException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -71,7 +72,7 @@ public class UrlService {
 
             try {
                 urlRepository.save(url);
-                return new UrlResponseDTO(url.getShortenedUrl(), url.getCreatedAt());
+                return new UrlResponseDTO(url.getId(), url.getShortenedUrl(), url.getCreatedAt());
             } catch(ConstraintViolationException e) {
                 continue;
             }
@@ -83,5 +84,13 @@ public class UrlService {
         return urlRepository.findByShortCode(shortCode)
                 .map(Url::getTargetUrl)
                 .orElseThrow(UrlNotFoundException::new);
+    }
+
+    public List<UrlResponseDTO> getAllUrls() {
+        List<Url> urls = urlRepository.findAll();
+
+        return urls.stream()
+                .map(u -> new UrlResponseDTO(u.getId(), u.getShortenedUrl(), u.getCreatedAt()))
+                .collect(Collectors.toList());
     }
 }
