@@ -24,12 +24,36 @@
     *   `201 Created`: Retorna a URL encurtada e a timestamp da criação.
 
         ```json
-        [
+        {
             "shortenedUrl": "http://127.0.0.1:8080/OMUwE0",
             "createdAt": "2025-11-05T21:08:36.060444315"
+        }
+
+### 2. Listar todas as URLs
+
+*   **Método:** `GET`
+*   **Caminho:** `/urls`
+*   **Descrição:** Lista todas as URLs registradas/encurtadas.
+*   **Resposta:**
+    *   `200 OK`: Retorna todas as URLs registradas/encurtadas (juntamente com o ID, URL alvo e timestamp da criação).
+
+        ```json
+        [
+            {
+                "id": 1,
+                "targetUrl": "https://google.com",
+                "shortenedUrl": "http://127.0.0.1:8080/xBU5XX",
+                "createdAt": "2025-11-06T03:25:02.833156"
+            },
+            {
+                "id": 2,
+                "targetUrl": "https://github.com/thiimont",
+                "shortenedUrl": "http://127.0.0.1:8080/jZkKKE",
+                "createdAt": "2025-11-06T03:26:05.239215"
+            }
         ]
 
-### 2. Redirecionamento
+### 3. Redirecionamento
 
 *   **Método:** `GET`
 *   **Caminho:** `/{shortCode}`
