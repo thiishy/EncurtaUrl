@@ -4,6 +4,7 @@ import com.thiimont.encurtaurl.configuration.UrlConfig;
 import com.thiimont.encurtaurl.dto.UrlResponseDTO;
 import com.thiimont.encurtaurl.model.Url;
 import com.thiimont.encurtaurl.repository.UrlRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -47,16 +48,10 @@ public class UrlService {
     }
 
     public String generateShortCode() {
-        String shortCode;
-
-        do {
-            shortCode = IntStream.generate(() -> secureRandom.nextInt(ALPHABET.length()))
-                    .limit(LENGTH)
-                    .mapToObj(i -> String.valueOf(ALPHABET.charAt(i)))
-                    .collect(Collectors.joining());
-        } while (urlRepository.existsByShortCode(shortCode));
-
-        return shortCode;
+        return IntStream.generate(() -> secureRandom.nextInt(ALPHABET.length()))
+                .limit(LENGTH)
+                .mapToObj(i -> String.valueOf(ALPHABET.charAt(i)))
+                .collect(Collectors.joining());
     }
 
     public UrlResponseDTO shortenUrl(String targetUrl) {
@@ -64,18 +59,24 @@ public class UrlService {
             throw new InvalidUrlException();
         }
 
-        Url url = new Url();
+        // O loop é justificável, isso nunca vai passar de 1 tentativa (mas é sempre bom se precaver)
+        while(true) {
+            String shortCode = generateShortCode();
 
-        String shortCode = generateShortCode();
+            Url url = new Url();
+            url.setTargetUrl(targetUrl);
+            url.setShortenedUrl(urlConfig.getBaseUrl() + "/" + shortCode);
+            url.setShortCode(shortCode);
+            url.setCreatedAt(LocalDateTime.now());
 
-        url.setTargetUrl(targetUrl);
-        url.setShortenedUrl(urlConfig.getBaseUrl() + "/" + shortCode);
-        url.setShortCode(shortCode);
-        url.setCreatedAt(LocalDateTime.now());
+            try {
+                urlRepository.save(url);
+                return new UrlResponseDTO(url.getShortenedUrl(), url.getCreatedAt());
+            } catch(ConstraintViolationException e) {
+                continue;
+            }
+        }
 
-        urlRepository.save(url);
-
-        return new UrlResponseDTO(url.getShortenedUrl(), url.getCreatedAt());
     }
 
     public String getTargetUrl(String shortCode) {
