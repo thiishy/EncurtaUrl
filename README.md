@@ -20,14 +20,23 @@
 *   **Método:** `POST`
 *   **Caminho:** `/register`
 *   **Descrição:** Recebe a URL alvo (enviada no corpo da requisição em formato JSON) e a encurta.
+*   **Exemplo de requisição:**
+
+       ```json
+            {
+                "targetUrl": "https://google.com"
+            }
+    
 *   **Resposta:**
     *   `201 Created`: Retorna a URL encurtada e a timestamp da criação.
 
         ```json
-        {
-            "shortenedUrl": "http://127.0.0.1:8080/OMUwE0",
-            "createdAt": "2025-11-05T21:08:36.060444315"
-        }
+            {
+                "id": 1,
+                "targetUrl": "https://google.com",
+                "shortenedUrl": "http://127.0.0.1:8080/xBU5XX",
+                "createdAt": "2025-11-06T03:25:02.833156"
+            }
 
 ### 2. Listar todas as URLs
 
