@@ -19,16 +19,22 @@ public class UrlController {
         this.urlService = urlService;
     }
 
+    @GetMapping("/urls")
+    public ResponseEntity<List<UrlResponseDTO>> listUrls() {
+        List<UrlResponseDTO> response = urlService.getAllUrls();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<UrlResponseDTO> registerUrl(@RequestBody UrlRequestDTO request) {
         UrlResponseDTO response = urlService.shortenUrl(request.targetUrl());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/urls")
-    public ResponseEntity<List<UrlResponseDTO>> listUrls() {
-        List<UrlResponseDTO> response = urlService.getAllUrls();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<UrlResponseDTO> deleteUrl(@PathVariable Long id) {
+        urlService.deleteUrl(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{shortCode}")

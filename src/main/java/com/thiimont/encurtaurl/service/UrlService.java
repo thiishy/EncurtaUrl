@@ -101,4 +101,11 @@ public class UrlService {
                 .map(u -> new UrlResponseDTO(u.getId(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/" + u.getShortCode(), u.getCreatedAt()))
                 .collect(Collectors.toList());
     }
+
+    public void deleteUrl(Long id) {
+        Url url = urlRepository.findById(id)
+                .orElseThrow(UrlNotFoundException::new);
+
+        urlRepository.delete(url);
+    }
 }
