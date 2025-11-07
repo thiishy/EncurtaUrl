@@ -62,7 +62,7 @@
                 "createdAt": "2025-11-06T03:25:02.833156"
             }
 
-### 2. Excluir uma URL encurtada
+### 3. Excluir uma URL encurtada
 
 *   **Método:** `DELETE`
 *   **Caminho:** `/delete/{id}`
@@ -70,7 +70,7 @@
 *   **Resposta:**
     *   `204 No Content`: Não retorna nada, mas indica sucesso.
 
-### 3. Redirecionamento
+### 4. Redirecionamento
 
 *   **Método:** `GET`
 *   **Caminho:** `/{shortCode}`
