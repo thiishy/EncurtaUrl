@@ -35,18 +35,27 @@ public class UrlService {
     }
 
     public boolean isValidUrl(String targetUrl) {
-        if (!targetUrl.isBlank()) {
-            try {
-                URL urlObj = new URL(targetUrl);
-                urlObj.toURI();
-                return true;
-            } catch (MalformedURLException | URISyntaxException e) {
-                return false;
-            }
-        } else {
+        if (targetUrl == null || targetUrl.isBlank()) return false;
+
+        try {
+            URL url = new URL(targetUrl);
+            url.toURI();
+
+            String protocol = url.getProtocol().toLowerCase();
+            if (!protocol.equals("http") && !protocol.equals("https")) return false;
+
+            String host = url.getHost();
+            if (host == null || host.isBlank()) return false;
+            if (host.startsWith(".") || host.endsWith(".")) return false;
+            if (!host.contains(".")) return false;
+
+            return true;
+        } catch (MalformedURLException | URISyntaxException e) {
             return false;
         }
     }
+
+
 
     public String generateShortCode() {
         return IntStream.generate(() -> secureRandom.nextInt(ALPHABET.length()))
