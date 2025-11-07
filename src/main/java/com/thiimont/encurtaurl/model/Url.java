@@ -20,17 +20,13 @@ public class Url {
     private String targetUrl;
 
     @Column(unique = true, nullable = false)
-    private String shortenedUrl;
-
-    @Column(unique = true, nullable = false)
     private String shortCode;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Url(String targetUrl, String shortenedUrl, String shortCode, LocalDateTime createdAt) {
+    public Url(String targetUrl, String shortCode, LocalDateTime createdAt) {
         this.targetUrl = targetUrl;
-        this.shortenedUrl = shortenedUrl;
         this.shortCode = shortCode;
         this.createdAt = createdAt;
     }

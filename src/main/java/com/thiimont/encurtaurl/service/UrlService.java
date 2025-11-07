@@ -66,13 +66,12 @@ public class UrlService {
 
             Url url = new Url();
             url.setTargetUrl(targetUrl);
-            url.setShortenedUrl(urlConfig.getBaseUrl() + "/" + shortCode);
             url.setShortCode(shortCode);
             url.setCreatedAt(LocalDateTime.now());
 
             try {
                 urlRepository.save(url);
-                return new UrlResponseDTO(url.getId(), url.getTargetUrl(), url.getShortenedUrl(), url.getCreatedAt());
+                return new UrlResponseDTO(url.getId(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/" + shortCode, url.getCreatedAt());
             } catch(ConstraintViolationException e) {
                 continue;
             }
@@ -90,7 +89,7 @@ public class UrlService {
         List<Url> urls = urlRepository.findAll();
 
         return urls.stream()
-                .map(u -> new UrlResponseDTO(u.getId(), u.getTargetUrl(), u.getShortenedUrl(), u.getCreatedAt()))
+                .map(u -> new UrlResponseDTO(u.getId(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/" + u.getShortCode(), u.getCreatedAt()))
                 .collect(Collectors.toList());
     }
 }
