@@ -4,7 +4,7 @@ import com.thiimont.encurtaurl.configuration.UrlConfig;
 import com.thiimont.encurtaurl.dto.UrlResponseDTO;
 import com.thiimont.encurtaurl.model.Url;
 import com.thiimont.encurtaurl.repository.UrlRepository;
-import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -81,7 +81,7 @@ public class UrlService {
             try {
                 urlRepository.save(url);
                 return new UrlResponseDTO(url.getId(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/" + shortCode, url.getCreatedAt());
-            } catch(ConstraintViolationException e) {
+            } catch(DataIntegrityViolationException e) {
                 continue;
             }
         }
