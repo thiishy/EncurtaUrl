@@ -3,12 +3,12 @@ package com.thiimont.encurtaurl.controller;
 import com.thiimont.encurtaurl.dto.UrlRequestDTO;
 import com.thiimont.encurtaurl.dto.UrlResponseDTO;
 import com.thiimont.encurtaurl.service.UrlService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -20,8 +20,8 @@ public class UrlController {
     }
 
     @GetMapping("/urls")
-    public ResponseEntity<List<UrlResponseDTO>> listUrls() {
-        List<UrlResponseDTO> response = urlService.getAllUrls();
+    public ResponseEntity<Page<UrlResponseDTO>> listUrls(@RequestParam(defaultValue = "0") int page) {
+        Page<UrlResponseDTO> response = urlService.getAllUrls(page);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

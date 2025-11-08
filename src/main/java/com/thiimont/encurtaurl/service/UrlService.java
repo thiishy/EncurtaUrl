@@ -5,6 +5,10 @@ import com.thiimont.encurtaurl.dto.UrlResponseDTO;
 import com.thiimont.encurtaurl.model.Url;
 import com.thiimont.encurtaurl.repository.UrlRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -15,7 +19,6 @@ import com.thiimont.encurtaurl.exception.UrlNotFoundException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -27,6 +30,8 @@ public class UrlService {
 
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int LENGTH = 6;
+
+    private static final int PAGE_SIZE = 10;
 
     public UrlService(UrlRepository urlRepository, UrlConfig urlConfig, SecureRandom secureRandom) {
         this.urlRepository = urlRepository;
@@ -94,12 +99,11 @@ public class UrlService {
                 .orElseThrow(UrlNotFoundException::new);
     }
 
-    public List<UrlResponseDTO> getAllUrls() {
-        List<Url> urls = urlRepository.findAll();
+    public Page<UrlResponseDTO> getAllUrls(int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
+        Page<Url> urlPage = urlRepository.findAll(pageable);
 
-        return urls.stream()
-                .map(u -> new UrlResponseDTO(u.getId(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/" + u.getShortCode(), u.getCreatedAt()))
-                .collect(Collectors.toList());
+        return urlPage.map(u -> new UrlResponseDTO(u.getId(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/" + u.getShortCode(), u.getCreatedAt()));
     }
 
     public void deleteUrl(Long id) {
