@@ -18,26 +18,55 @@
 ### 1. Listar todas as URLs
 
 *   **Método:** `GET`
-*   **Caminho:** `/urls`
-*   **Descrição:** Lista todas as URLs registradas/encurtadas.
+*   **Caminho:** `/urls?page=0 (padrão: 0)`
+*   **Descrição:** Lista todas as URLs registradas/encurtadas divididas em páginas com 10 registros cada por padrão.
 *   **Resposta:**
-    *   `200 OK`: Retorna todas as URLs registradas/encurtadas (juntamente com o ID, URL alvo e timestamp da criação).
+    *   `200 OK`
 
         ```json
-        [
-            {
-                "id": 1,
-                "targetUrl": "https://google.com",
-                "shortenedUrl": "http://127.0.0.1:8080/xBU5XX",
-                "createdAt": "2025-11-06T03:25:02.833156"
+        {
+            "content": [
+                {
+                    "id": 17,
+                    "targetUrl": "http://n.com",
+                    "shortenedUrl": "http://127.0.0.1:8080/hRzyZC",
+                    "createdAt": "2025-11-08T18:40:13.93834"
+                },
+                {
+                    "id": 16,
+                    "targetUrl": "http://m.com",
+                    "shortenedUrl": "http://127.0.0.1:8080/huFp2b",
+                    "createdAt": "2025-11-08T18:40:09.284384"
+                },
+                ...
+            ],
+            "pageable": {
+                "pageNumber": 0,
+                "pageSize": 10,
+                "sort": {
+                    "sorted": true,
+                    "empty": false,
+                    "unsorted": false
+                },
+                "offset": 0,
+                "paged": true,
+                "unpaged": false
             },
-            {
-                "id": 2,
-                "targetUrl": "https://github.com/thiimont",
-                "shortenedUrl": "http://127.0.0.1:8080/jZkKKE",
-                "createdAt": "2025-11-06T03:26:05.239215"
-            }
-        ]
+            "totalPages": 2,
+            "totalElements": 15,
+            "last": false,
+            "size": 10,
+            "number": 0,
+            "numberOfElements": 10,
+            "sort": {
+                "sorted": true,
+                "empty": false,
+                "unsorted": false
+            },
+            "first": true,
+            "empty": false
+        }
+        ```
 
 ### 2. Registrar/encurtar uma URL
 
@@ -52,7 +81,7 @@
             }
     
 *   **Resposta:**
-    *   `201 Created`: Retorna a URL encurtada e a timestamp da criação.
+    *   `201 Created`
 
         ```json
             {
@@ -68,14 +97,14 @@
 *   **Caminho:** `/delete/{id}`
 *   **Descrição:** Recebe o ID da URL encurtada e realiza a exclusão caso ela exista.
 *   **Resposta:**
-    *   `204 No Content`: Não retorna nada, mas indica sucesso.
+    *   `204 No Content`
 
 ### 4. Redirecionamento
 
 *   **Método:** `GET`
 *   **Caminho:** `/{shortCode}`
 *   **Resposta:**
-    *   `302 Found`: Redireciona para a URL alvo.
+    *   `302 Found`
 
 ## 🧩 Dependências
 - Spring Web
