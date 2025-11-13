@@ -15,6 +15,10 @@
 
 ## 📍 Lista de endpoints da API
 
+Para mais detalhes, acesse o Swagger UI em http://127.0.0.1:8080/swagger-ui (substitua localhost pelo seu domínio, caso esteja hospedado)
+
+![Imagem demonstrando a API documentada com Swagger UI](https://i.imgur.com/44713M2.png)
+
 ### 1. Listar todas as URLs
 
 *   **Método:** `GET`
@@ -22,51 +26,6 @@
 *   **Descrição:** Lista todas as URLs registradas/encurtadas divididas em páginas com 10 registros cada por padrão.
 *   **Resposta:**
     *   `200 OK`
-
-        ```json
-        {
-            "content": [
-                {
-                    "id": 17,
-                    "targetUrl": "http://n.com",
-                    "shortenedUrl": "http://127.0.0.1:8080/hRzyZC",
-                    "createdAt": "2025-11-08T18:40:13.93834"
-                },
-                {
-                    "id": 16,
-                    "targetUrl": "http://m.com",
-                    "shortenedUrl": "http://127.0.0.1:8080/huFp2b",
-                    "createdAt": "2025-11-08T18:40:09.284384"
-                },
-                ...
-            ],
-            "pageable": {
-                "pageNumber": 0,
-                "pageSize": 10,
-                "sort": {
-                    "sorted": true,
-                    "empty": false,
-                    "unsorted": false
-                },
-                "offset": 0,
-                "paged": true,
-                "unpaged": false
-            },
-            "totalPages": 2,
-            "totalElements": 15,
-            "last": false,
-            "size": 10,
-            "number": 0,
-            "numberOfElements": 10,
-            "sort": {
-                "sorted": true,
-                "empty": false,
-                "unsorted": false
-            },
-            "first": true,
-            "empty": false
-        }
-        ```
 
 ### 2. Registrar/encurtar uma URL
 
@@ -82,14 +41,6 @@
     
 *   **Resposta:**
     *   `201 Created`
-
-        ```json
-            {
-                "id": 1,
-                "targetUrl": "https://google.com",
-                "shortenedUrl": "http://127.0.0.1:8080/xBU5XX",
-                "createdAt": "2025-11-06T03:25:02.833156"
-            }
 
 ### 3. Excluir uma URL encurtada
 
@@ -111,6 +62,7 @@
 - Spring Data JPA
 - PostgreSQL Driver
 - Lombok
+- SpringDoc OpenAPI Starter WebMVC UI
 
 Projeto inicializado com Maven - confira o **pom.xml** para mais detalhes.
 
