@@ -1,4 +1,5 @@
 package com.thiimont.encurtaurl.dto;
 
-public record UrlRequestDTO(String targetUrl) {}
+import jakarta.validation.constraints.NotBlank;
 
+public record UrlRequestDTO(@NotBlank(message = "A URL não pode estar vazia.") String targetUrl) {}
