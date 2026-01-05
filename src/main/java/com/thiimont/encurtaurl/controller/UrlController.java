@@ -3,6 +3,7 @@ package com.thiimont.encurtaurl.controller;
 import com.thiimont.encurtaurl.dto.UrlRequestDTO;
 import com.thiimont.encurtaurl.dto.UrlResponseDTO;
 import com.thiimont.encurtaurl.service.UrlService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class UrlController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UrlResponseDTO> registerUrl(@RequestBody UrlRequestDTO request) {
+    public ResponseEntity<UrlResponseDTO> registerUrl(@RequestBody @Valid UrlRequestDTO request) {
         UrlResponseDTO response = urlService.shortenUrl(request.targetUrl());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
