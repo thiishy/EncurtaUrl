@@ -2,12 +2,10 @@
 
 ![Imagem demonstrando o funcionamento da API, informando uma URL alvo e recebendo a URL encurtada](https://i.imgur.com/VZukhck.png)
 
-## 💻 Ambiente de teste
-- Linux Mint 22.2
-- OpenJDK 24.0.2 (versão mínima: 17)
-- Spring Boot 3.5.7
-- IntelliJ IDEA
-- PostgreSQL 15 em um container Docker
+## 📦 Pré-requisitos
+- Java JDK 17+ [Download](https://openjdk.org/)
+- Maven [Download](https://maven.apache.org/download.cgi)
+- PostgreSQL 15+ [Download](https://www.postgresql.org/download/)
 
 ## ⚙️ Configuração
 - Você deve editar o **application.properties** *(localizado em src/main/resources)* e alterar o valor da propriedade **encurtaurl.base-url** para a URL base do seu servidor *(já está configurado para localhost por padrão)*. 
@@ -63,12 +61,14 @@ Para mais detalhes, acesse o Swagger UI em http://127.0.0.1:8080/swagger-ui (sub
 - PostgreSQL Driver
 - Lombok
 - SpringDoc OpenAPI Starter WebMVC UI
+- Flyway
 
 Projeto inicializado com Maven - confira o **pom.xml** para mais detalhes.
 
 ## 📋 A fazer
-- [ ] Rate limiting
+- [ ] Dockerfile
 - [ ] Autenticação
 - [ ] Caching
+- [ ] Rate limiting
 
 *Aceito sugestões!*
