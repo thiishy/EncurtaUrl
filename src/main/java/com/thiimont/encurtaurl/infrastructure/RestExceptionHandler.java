@@ -1,5 +1,6 @@
 package com.thiimont.encurtaurl.infrastructure;
 
+import com.thiimont.encurtaurl.exception.InactiveUrlException;
 import com.thiimont.encurtaurl.exception.InvalidUrlException;
 import com.thiimont.encurtaurl.exception.UrlNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RestErrorMessage> genericExceptionErrorHandler(Exception exception) {
+        RestErrorMessage errorResponse = new RestErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
     @ExceptionHandler(UrlNotFoundException.class)
     public ResponseEntity<RestErrorMessage> urlNotFoundErrorHandler(UrlNotFoundException exception) {
         RestErrorMessage errorResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
@@ -27,6 +34,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<RestErrorMessage> invalidUrlErrorHandler(InvalidUrlException exception) {
         RestErrorMessage errorResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST, exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(InactiveUrlException.class)
+    public ResponseEntity<RestErrorMessage> inactiveUrlErrorHandler(InactiveUrlException exception) {
+        RestErrorMessage errorResponse = new RestErrorMessage(HttpStatus.GONE, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.GONE).body(errorResponse);
     }
 
 }
