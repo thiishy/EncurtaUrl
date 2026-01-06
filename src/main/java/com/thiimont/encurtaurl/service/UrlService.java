@@ -1,9 +1,12 @@
 package com.thiimont.encurtaurl.service;
 
 import com.thiimont.encurtaurl.configuration.UrlConfig;
-import com.thiimont.encurtaurl.dto.UrlResponseDTO;
+import com.thiimont.encurtaurl.dto.response.UrlResponseDTO;
 import com.thiimont.encurtaurl.model.Url;
+import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UrlRepository;
+import com.thiimont.encurtaurl.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,13 +21,15 @@ import com.thiimont.encurtaurl.exception.UrlNotFoundException;
 
 import java.net.URL;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UrlService {
     private final UrlRepository urlRepository;
+    private final UserRepository userRepository;
     private final UrlConfig urlConfig;
     private final SecureRandom secureRandom;
 
@@ -33,13 +38,7 @@ public class UrlService {
 
     private static final int PAGE_SIZE = 10;
 
-    public UrlService(UrlRepository urlRepository, UrlConfig urlConfig, SecureRandom secureRandom) {
-        this.urlRepository = urlRepository;
-        this.urlConfig = urlConfig;
-        this.secureRandom = secureRandom;
-    }
-
-    public boolean isValidUrl(String targetUrl) {
+    private boolean isValidUrl(String targetUrl) {
         if (targetUrl == null || targetUrl.isBlank()) return false;
 
         try {
@@ -62,14 +61,17 @@ public class UrlService {
 
 
 
-    public String generateShortCode() {
+    private String generateShortCode() {
         return IntStream.generate(() -> secureRandom.nextInt(ALPHABET.length()))
                 .limit(LENGTH)
                 .mapToObj(i -> String.valueOf(ALPHABET.charAt(i)))
                 .collect(Collectors.joining());
     }
 
-    public UrlResponseDTO shortenUrl(String targetUrl) {
+    public UrlResponseDTO shortenUrl(UUID uuidUser, String targetUrl) {
+        User user = userRepository.findByUuid(uuidUser)
+                .orElseThrow(() -> new IllegalArgumentException("Acesso negado."));
+
         if (!isValidUrl(targetUrl)) {
             throw new InvalidUrlException();
         }
@@ -81,11 +83,11 @@ public class UrlService {
             Url url = new Url();
             url.setTargetUrl(targetUrl);
             url.setShortCode(shortCode);
-            url.setCreatedAt(LocalDateTime.now());
+            url.setUser(user);
 
             try {
                 urlRepository.save(url);
-                return new UrlResponseDTO(url.getId(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/" + shortCode, url.getCreatedAt());
+                return new UrlResponseDTO(url.getUuid(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/" + shortCode, url.getCreatedAt());
             } catch(DataIntegrityViolationException e) {
                 continue;
             }
@@ -99,15 +101,15 @@ public class UrlService {
                 .orElseThrow(UrlNotFoundException::new);
     }
 
-    public Page<UrlResponseDTO> getAllUrls(int page) {
+    public Page<UrlResponseDTO> getAllUrls(UUID uuidUser, int page) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
-        Page<Url> urlPage = urlRepository.findAll(pageable);
+        Page<Url> urlPage = urlRepository.findAllByUserUuid(uuidUser, pageable);
 
-        return urlPage.map(u -> new UrlResponseDTO(u.getId(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/" + u.getShortCode(), u.getCreatedAt()));
+        return urlPage.map(u -> new UrlResponseDTO(u.getUuid(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/" + u.getShortCode(), u.getCreatedAt()));
     }
 
-    public void deleteUrl(Long id) {
-        Url url = urlRepository.findById(id)
+    public void deleteUrl(UUID uuidUser, UUID uuidUrl) {
+        Url url = urlRepository.findByUuidAndUserUuid(uuidUrl, uuidUser)
                 .orElseThrow(UrlNotFoundException::new);
 
         urlRepository.delete(url);
