@@ -1,34 +1,83 @@
 # ✂️ EncurtaUrl - encurtador de URLs simples desenvolvido em Spring Boot
 
-![Imagem demonstrando o funcionamento da API, informando uma URL alvo e recebendo a URL encurtada](https://i.imgur.com/VZukhck.png)
+![Imagem demonstrando o funcionamento da API, informando uma URL alvo e recebendo a URL encurtada](https://i.imgur.com/0rSjpce.png)
 
 ## 📦 Pré-requisitos
-- Java JDK 17+ [Download](https://openjdk.org/)
-- Maven [Download](https://maven.apache.org/download.cgi)
-- PostgreSQL 15+ [Download](https://www.postgresql.org/download/)
+- ☕ **Java JDK 17+** [(Download)](https://openjdk.org/)
+- 📦 **Maven** [(Download)](https://maven.apache.org/download.cgi) e **Git** [(Download)](https://git-scm.com/install/)
+- 🐘 **PostgreSQL 16+** [(Download)](https://www.postgresql.org/download/)
+- 🐋 **Docker e Docker Compose** *(recomendado)* [(Download)](https://www.docker.com/get-started/)
 
 ## ⚙️ Configuração
-- Você deve editar o **application.properties** *(localizado em src/main/resources)* e alterar o valor da propriedade **encurtaurl.base-url** para a URL base do seu servidor *(já está configurado para localhost por padrão)*. 
-- Altere também os dados da conexão com o banco de dados.
+### Manual (sem Docker)
+1. Instale o Java JDK 17+, Maven e o PostgreSQL 16+
+2. Configure o banco de dados
+3. Clone o repositório (pelo website ou com o comando `git clone https://github.com/thiishy/EncurtaUrl.git`
+4. Na raiz do repositório, crie um arquivo **.env** seguindo o template que está no arquivo **.env.example**:
+   - **DB_NAME**: Nome do banco de dados
+   - **DB_USERNAME**: Nome do seu usuário no banco de dados
+   - **DB_PASSWORD**: Senha do seu usuário no banco de dados
+   - **DB_URL**: URL da conexão JDBC com o banco de dados *(ex: jdbc:postgresql://localhost/db_sistema)*
+   - **ENCURTAURL_BASE_URL**: A URL base do seu servidor. Deve estar no formato correto, essa vai ser a URL apresentada pela API junto com o código curto após o encurtamento. *(ex: https://google.com, http://127.0.0.1:8080)*
+   - **JWT_SECRET**: Segredo JWT de 256 bits, [**NÃO VAZE**](https://security.stackexchange.com/a/239895) e rotacione sempre que puder! *(ex: LzR7ceG3a1BhjQLzxvmxo2GqSuoSr7d3rAw1XGkgss9NJTL7i68btNlMGo6F6jyO)*
+5. Rode o comando `mvn clean install`
+6. Para inicializar a aplicação, rode `mvn spring-boot:run`
+
+### O caminho fácil (com Docker)
+1. Instale o Docker e o Docker Compose
+2. Clone o repositório (pelo website ou com o comando `git clone https://github.com/thiishy/EncurtaUrl.git`
+4. Na raiz do repositório, crie um arquivo **.env** seguindo o template que está no arquivo **.env.example**:
+   - **DB_NAME**: Nome do banco de dados
+   - **DB_USERNAME**: Nome do seu usuário no banco de dados
+   - **DB_PASSWORD**: Senha do seu usuário no banco de dados
+   - **DB_URL**: URL da conexão JDBC com o banco de dados *(ex: jdbc:postgresql://localhost/db_sistema)*
+   - **ENCURTAURL_BASE_URL**: A URL base do seu servidor. Deve estar no formato correto, essa vai ser a URL apresentada pela API junto com o código curto após o encurtamento. *(ex: https://google.com, http://127.0.0.1:8080)*
+5. Exporte as variáveis da sua .env para o seu ambiente
+6. Ainda na raiz do repositório, rode o comando `docker-compose up --build` e aguarde
+7. Após a build, a aplicação irá inicializar automaticamente. Você pode parar os serviços com `docker-compose stop` ou apagar os containers com `docker-compose down` (**não apaga** os volumes) ou `docker-compose down -v` (**apaga** os volumes)
 
 ## 📍 Lista de endpoints da API
 
-Para mais detalhes, acesse o Swagger UI em http://127.0.0.1:8080/swagger-ui (substitua localhost pelo seu domínio, caso esteja hospedado)
+Para mais detalhes, acesse o Swagger UI em http://127.0.0.1:8080/swagger-ui/index.html *(substitua localhost pelo seu domínio, caso esteja hospedado)*
 
-![Imagem demonstrando a API documentada com Swagger UI](https://i.imgur.com/44713M2.png)
+![Imagem demonstrando a API documentada com Swagger UI](https://i.imgur.com/3uzTDPX.png)
 
-### 1. Listar todas as URLs
+<details>
+   <summary>🔑 <b>Auth</b></summary>
+
+### 1. Login
+
+*   **Método:** `POST`
+*   **Caminho:** `/auth/login`
+*   **Descrição:** Endpoint de autenticação de usuários.
+*   **Resposta:**
+    *   `200 OK`
+ 
+### 2. Registro
+
+*   **Método:** `POST`
+*   **Caminho:** `/auth/register`
+*   **Descrição:** Endpoint de registro de usuários.
+*   **Resposta:**
+    *   `200 OK`
+   
+</details>
+
+<details>
+   <summary>🌐 <b>URLs</b></summary>
+
+### 1. Listar todas as URLs do usuário [🔒]
 
 *   **Método:** `GET`
-*   **Caminho:** `/urls?page=0 (padrão: 0)`
+*   **Caminho:** `/me/urls?page=0 (padrão: 0)`
 *   **Descrição:** Lista todas as URLs registradas/encurtadas divididas em páginas com 10 registros cada por padrão.
 *   **Resposta:**
     *   `200 OK`
 
-### 2. Registrar/encurtar uma URL
+### 2. Registrar/encurtar uma URL [🔒]
 
 *   **Método:** `POST`
-*   **Caminho:** `/register`
+*   **Caminho:** `/me/shorten`
 *   **Descrição:** Recebe a URL alvo (enviada no corpo da requisição em formato JSON) e a encurta.
 *   **Exemplo de requisição:**
 
@@ -40,11 +89,11 @@ Para mais detalhes, acesse o Swagger UI em http://127.0.0.1:8080/swagger-ui (sub
 *   **Resposta:**
     *   `201 Created`
 
-### 3. Excluir uma URL encurtada
+### 3. Excluir uma URL encurtada [🔒]
 
 *   **Método:** `DELETE`
-*   **Caminho:** `/delete/{id}`
-*   **Descrição:** Recebe o ID da URL encurtada e realiza a exclusão caso ela exista.
+*   **Caminho:** `/me/delete/{uuid}`
+*   **Descrição:** Recebe o UUID da URL encurtada e realiza a exclusão caso ela exista.
 *   **Resposta:**
     *   `204 No Content`
 
@@ -55,19 +104,25 @@ Para mais detalhes, acesse o Swagger UI em http://127.0.0.1:8080/swagger-ui (sub
 *   **Resposta:**
     *   `302 Found`
 
+</details>
+
+
 ## 🧩 Dependências
 - Spring Web
+- Spring Security
 - Spring Data JPA
 - PostgreSQL Driver
 - Lombok
 - SpringDoc OpenAPI Starter WebMVC UI
 - Flyway
+- Auth0 JWT
+- Bouncy Castle Provider
 
 Projeto inicializado com Maven - confira o **pom.xml** para mais detalhes.
 
 ## 📋 A fazer
-- [ ] Dockerfile
-- [ ] Autenticação
+- [X] Dockerfile
+- [X] Autenticação
 - [ ] Caching
 - [ ] Rate limiting
 
