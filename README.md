@@ -20,8 +20,11 @@
    - **DB_URL**: URL da conexão JDBC com o banco de dados *(ex: jdbc:postgresql://localhost/db_sistema)*
    - **ENCURTAURL_BASE_URL**: A URL base do seu servidor. Deve estar no formato correto, essa vai ser a URL apresentada pela API junto com o código curto após o encurtamento. *(ex: https://google.com, http://127.0.0.1:8080)*
    - **JWT_SECRET**: Segredo JWT de 256 bits, [**NÃO VAZE**](https://security.stackexchange.com/a/239895) e rotacione sempre que puder! *(ex: LzR7ceG3a1BhjQLzxvmxo2GqSuoSr7d3rAw1XGkgss9NJTL7i68btNlMGo6F6jyO)*
-5. Rode o comando `mvn clean install`
-6. Para inicializar a aplicação, rode `mvn spring-boot:run`
+5. Rode o comando `mvn clean install` para fazer a build do projeto
+6. Para inicializar a aplicação, rode `mvn spring-boot:run` e a aplicação irá inicializar
+
+> [!TIP]
+> Se você decidir fazer a build do projeto com o banco de dados desligado, use o parâmetro `-DskipTests` no comando para evitar erros de build.
 
 ### O caminho fácil (com Docker)
 1. Instale o Docker e o Docker Compose
@@ -30,7 +33,7 @@
    - **DB_NAME**: Nome do banco de dados
    - **DB_USERNAME**: Nome do seu usuário no banco de dados
    - **DB_PASSWORD**: Senha do seu usuário no banco de dados
-   - **DB_URL**: URL da conexão JDBC com o banco de dados *(ex: jdbc:postgresql://localhost/db_sistema)*
+   - **DB_URL**: URL da conexão JDBC com o banco de dados. Não use `localhost`, use `db` para referenciar o banco de dados. *(ex: jdbc:postgresql://db/db_sistema)*
    - **ENCURTAURL_BASE_URL**: A URL base do seu servidor. Deve estar no formato correto, essa vai ser a URL apresentada pela API junto com o código curto após o encurtamento. *(ex: https://google.com, http://127.0.0.1:8080)*
 5. Exporte as variáveis da sua .env para o seu ambiente
 6. Ainda na raiz do repositório, rode o comando `docker-compose up --build` e aguarde
@@ -127,3 +130,7 @@ Projeto inicializado com Maven - confira o **pom.xml** para mais detalhes.
 - [ ] Rate limiting
 
 *Aceito sugestões!*
+
+---
+
+Feito com ♥ por [thiishy](https://github.com/thiishy)
