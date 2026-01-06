@@ -6,6 +6,7 @@ import com.thiimont.encurtaurl.dto.response.LoginResponseDTO;
 import com.thiimont.encurtaurl.dto.response.RegisterResponseDTO;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import com.thiimont.encurtaurl.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Auth", description = "Endpoints relacionados ao login e registro de usuários")
 @RequiredArgsConstructor
 public class AuthController {
     private final UserRepository userRepository;

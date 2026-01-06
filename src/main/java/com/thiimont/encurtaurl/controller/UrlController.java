@@ -4,6 +4,7 @@ import com.thiimont.encurtaurl.dto.request.UrlRequestDTO;
 import com.thiimont.encurtaurl.dto.response.UrlResponseDTO;
 import com.thiimont.encurtaurl.service.UrlService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
+@Tag(name = "URLs", description = "Endpoints relacionados ao gerenciamento das URLs do usuário")
 public class UrlController {
     private final UrlService urlService;
 
