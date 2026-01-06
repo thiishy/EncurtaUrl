@@ -2,7 +2,9 @@ package com.thiimont.encurtaurl.service;
 
 import com.thiimont.encurtaurl.configuration.UrlConfig;
 import com.thiimont.encurtaurl.dto.response.UrlResponseDTO;
+import com.thiimont.encurtaurl.exception.InactiveUrlException;
 import com.thiimont.encurtaurl.model.Url;
+import com.thiimont.encurtaurl.model.UrlStatus;
 import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UrlRepository;
 import com.thiimont.encurtaurl.repository.UserRepository;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -70,7 +73,7 @@ public class UrlService {
 
     public UrlResponseDTO shortenUrl(UUID uuidUser, String targetUrl) {
         User user = userRepository.findByUuid(uuidUser)
-                .orElseThrow(() -> new IllegalArgumentException("Acesso negado."));
+                .orElseThrow(() -> new AccessDeniedException("Acesso negado."));
 
         if (!isValidUrl(targetUrl)) {
             throw new InvalidUrlException();
@@ -88,14 +91,16 @@ public class UrlService {
             try {
                 urlRepository.save(url);
                 return new UrlResponseDTO(url.getUuid(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/" + shortCode, url.getCreatedAt());
-            } catch(DataIntegrityViolationException e) {
-                continue;
-            }
+            } catch(DataIntegrityViolationException ignored) {}
         }
 
     }
 
     public String getTargetUrl(String shortCode) {
+        if(!urlRepository.existsByShortCodeAndStatus(shortCode, UrlStatus.ACTIVE)) {
+            throw new InactiveUrlException();
+        }
+
         return urlRepository.findByShortCode(shortCode)
                 .map(Url::getTargetUrl)
                 .orElseThrow(UrlNotFoundException::new);
