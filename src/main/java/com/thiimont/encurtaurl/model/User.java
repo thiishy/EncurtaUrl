@@ -4,6 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.UUID;
 
 import java.time.LocalDateTime;
@@ -14,15 +20,18 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user")
     private Long id;
 
-    @org.hibernate.validator.constraints.UUID
-    @Column(name = "uuid_user", nullable = false, unique = true)
+    @Generated(event = EventType.INSERT)
+    @Column(name = "uuid_user", nullable = false, updatable = false, unique = true)
     private UUID uuid;
+
+    @Column(name = "name", nullable = false, length = 255)
+    private String name;
 
     @Column(name = "username", nullable = false, unique = true, length = 255)
     private String username;
@@ -30,13 +39,15 @@ public class User {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "created_at", nullable = false)
+    @Generated(event = EventType.INSERT)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Url> urls;
 
-    public User(String username, String password) {
+    public User(String name, String username, String password) {
+        this.name = name;
         this.username = username;
         this.password = password;
     }

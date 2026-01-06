@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
+
 import java.util.UUID;
 
 import java.time.LocalDateTime;
@@ -21,8 +22,8 @@ public class Url {
     @Column(name = "id_url")
     private Long id;
 
-    @org.hibernate.validator.constraints.UUID
-    @Column(name = "uuid_url", nullable = false, unique = true)
+    @Generated(event = EventType.INSERT)
+    @Column(name = "uuid_url", nullable = false, updatable = false, unique = true)
     private UUID uuid;
 
     @Column(name = "target_url", nullable = false, length = 2048)
@@ -32,11 +33,11 @@ public class Url {
     private String shortCode;
 
     @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    @Column(name = "status", columnDefinition = "url_status", nullable = false)
-    private UrlStatus status;
+    @Column(name = "status", nullable = false, length = 128)
+    private UrlStatus status = UrlStatus.ACTIVE;
 
-    @Column(name = "created_at", nullable = false)
+    @Generated(event = EventType.INSERT)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
