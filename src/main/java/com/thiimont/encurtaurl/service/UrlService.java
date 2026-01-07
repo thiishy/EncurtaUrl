@@ -9,6 +9,7 @@ import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UrlRepository;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,12 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
+import java.net.*;
+
 import com.thiimont.encurtaurl.exception.InvalidUrlException;
 import com.thiimont.encurtaurl.exception.UrlNotFoundException;
 
-import java.net.URL;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,34 +35,49 @@ public class UrlService {
     private final UserRepository userRepository;
     private final UrlConfig urlConfig;
     private final SecureRandom secureRandom;
+    private final UrlValidator urlValidator;
 
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int LENGTH = 6;
 
     private static final int PAGE_SIZE = 10;
 
-    private boolean isValidUrl(String targetUrl) {
-        if (targetUrl == null || targetUrl.isBlank()) return false;
-
+    private URI parseUriAndNormalize(String targetUrl) {
         try {
-            URL url = new URL(targetUrl);
-            url.toURI();
+            URI uri = new URI(targetUrl);
 
-            String protocol = url.getProtocol().toLowerCase();
-            if (!protocol.equals("http") && !protocol.equals("https")) return false;
+            if (uri.getUserInfo() != null) throw new InvalidUrlException();
 
-            String host = url.getHost();
-            if (host == null || host.isBlank()) return false;
-            if (host.startsWith(".") || host.endsWith(".")) return false;
-            if (!host.contains(".")) return false;
+            String authority = uri.getAuthority();
+            if (authority == null || authority.isBlank()) throw new InvalidUrlException();
 
-            return true;
-        } catch (MalformedURLException | URISyntaxException e) {
-            return false;
+            int colonIndex = authority.indexOf(':');
+            String host = colonIndex >= 0 ? authority.substring(0, colonIndex) : authority;
+
+            String asciiHost = IDN.toASCII(host);
+            if (asciiHost.isBlank()) throw new InvalidUrlException();
+
+            return new URI(
+                    uri.getScheme(),
+                    null,
+                    asciiHost,
+                    uri.getPort(),
+                    uri.getPath(),
+                    uri.getQuery(),
+                    uri.getFragment()
+            );
+
+        } catch (URISyntaxException e) {
+            throw new InvalidUrlException();
         }
     }
 
+    private boolean isValidUrl(String normalizedUri) {
+        if (normalizedUri == null || normalizedUri.isBlank()) return false;
+        if (!urlValidator.isValid(normalizedUri)) return false;
 
+        return true;
+    }
 
     private String generateShortCode() {
         return IntStream.generate(() -> secureRandom.nextInt(ALPHABET.length()))
@@ -75,7 +90,9 @@ public class UrlService {
         User user = userRepository.findByUuid(uuidUser)
                 .orElseThrow(() -> new AccessDeniedException("Acesso negado."));
 
-        if (!isValidUrl(targetUrl)) {
+        URI normalizedUri = parseUriAndNormalize(targetUrl);
+
+        if (!isValidUrl(normalizedUri.toString())) {
             throw new InvalidUrlException();
         }
 
@@ -84,7 +101,7 @@ public class UrlService {
             String shortCode = generateShortCode();
 
             Url url = new Url();
-            url.setTargetUrl(targetUrl);
+            url.setTargetUrl(normalizedUri.toString());
             url.setShortCode(shortCode);
             url.setUser(user);
 
