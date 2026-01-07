@@ -140,6 +140,7 @@
 - Flyway
 - Auth0 JWT
 - Bouncy Castle Provider
+- Apache Commons Validator
 
 Projeto inicializado com Maven - confira o **pom.xml** para mais detalhes.
 
