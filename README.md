@@ -13,11 +13,15 @@
 </div>
 
 ## 📦 Pré-requisitos
+#### Manual (sem Docker)
 - 🌿 **Git** *(opcional)* [(Download)](https://git-scm.com/install/)
 - ☕ **Java JDK 17+** [(Download)](https://openjdk.org/)
 - 📦 **Maven** [(Download)](https://maven.apache.org/download.cgi)
 - 🐘 **PostgreSQL 16+** [(Download)](https://www.postgresql.org/download/)
-- 🐋 **Docker e Docker Compose** *(recomendado)* [(Download)](https://www.docker.com/get-started/)
+
+#### O caminho fácil (com Docker) *(recomendado)*
+- 🌿 **Git** *(opcional)* [(Download)](https://git-scm.com/install/)
+- 🐋 **Docker e Docker Compose** [(Download)](https://www.docker.com/get-started/)
 
 ## ⚙️ Configuração
 ### Manual (sem Docker)
