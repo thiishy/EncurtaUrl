@@ -8,6 +8,9 @@ import com.thiimont.encurtaurl.dto.response.RegisterResponseDTO;
 import com.thiimont.encurtaurl.exception.ResourceCreationException;
 import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,12 +29,20 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final TokenConfig tokenConfig;
 
-    public LoginResponseDTO authenticateUser(LoginRequestDTO request) {
+    public LoginResponseDTO authenticateUser(String tokenCookie, LoginRequestDTO request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         UsernamePasswordAuthenticationToken userAndPass = new UsernamePasswordAuthenticationToken(request.username(), request.password());
         Authentication authentication = authenticationManager.authenticate(userAndPass);
 
         User user = (User) authentication.getPrincipal();
         String token = tokenConfig.generateToken(user);
+
+        Cookie cookie = new Cookie("token", token);
+        cookie.setMaxAge(43200);
+        cookie.setSecure(false);
+        cookie.setHttpOnly(true);
+        cookie.setAttribute("SameSite", "Strict");
+        cookie.setPath("/");
+        httpResponse.addCookie(cookie);
 
         return new LoginResponseDTO(token);
     }
