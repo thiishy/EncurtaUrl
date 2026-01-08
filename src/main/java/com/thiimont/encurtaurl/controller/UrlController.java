@@ -5,6 +5,7 @@ import com.thiimont.encurtaurl.dto.response.UrlResponseDTO;
 import com.thiimont.encurtaurl.service.UrlService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -28,8 +29,10 @@ public class UrlController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/me/urls")
     public ResponseEntity<Page<UrlResponseDTO>> listUrls(@AuthenticationPrincipal UUID uuidUser,
-                                                         @RequestParam(defaultValue = "0") int page) {
-        Page<UrlResponseDTO> response = urlService.getAllUrls(uuidUser, page);
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         HttpServletRequest httpRequest) {
+        String baseUrl = httpRequest.getRequestURL().toString();
+        Page<UrlResponseDTO> response = urlService.getAllUrls(uuidUser, page, baseUrl);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -44,8 +47,10 @@ public class UrlController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/me/shorten")
     public ResponseEntity<UrlResponseDTO> registerUrl(@AuthenticationPrincipal UUID uuidUser,
-                                                      @RequestBody @Valid UrlRequestDTO request) {
-        UrlResponseDTO response = urlService.shortenUrl(uuidUser, request.targetUrl());
+                                                      @RequestBody @Valid UrlRequestDTO request,
+                                                      HttpServletRequest httpRequest) {
+        String baseUrl = httpRequest.getRequestURL().toString();
+        UrlResponseDTO response = urlService.shortenUrl(uuidUser, request.targetUrl(), baseUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
