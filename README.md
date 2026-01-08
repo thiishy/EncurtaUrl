@@ -143,6 +143,7 @@
 *   **Caminho:** `/u/{shortCode}`
 *   **Respostas:**
     *   `302 Found` *(sucesso)*
+    *   `404 Not Found` *(URL não existe)*
     *   `410 Gone` *(URL marcada como inativa)*
 
 </details>
