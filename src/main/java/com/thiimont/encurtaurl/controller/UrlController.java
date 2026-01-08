@@ -34,6 +34,14 @@ public class UrlController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/me/urls/delete/{uuid}")
+    public ResponseEntity<UrlResponseDTO> deleteUrl(@AuthenticationPrincipal UUID uuidUser,
+                                                    @PathVariable UUID uuid) {
+        urlService.deleteUrl(uuidUser, uuid);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/me/shorten")
     public ResponseEntity<UrlResponseDTO> registerUrl(@AuthenticationPrincipal UUID uuidUser,
                                                       @RequestBody @Valid UrlRequestDTO request) {
@@ -41,15 +49,7 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @SecurityRequirement(name = "bearerAuth")
-    @DeleteMapping("/me/delete/{uuid}")
-    public ResponseEntity<UrlResponseDTO> deleteUrl(@AuthenticationPrincipal UUID uuidUser,
-                                                    @PathVariable UUID uuid) {
-        urlService.deleteUrl(uuidUser, uuid);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping("/{shortCode}")
+    @GetMapping("/u/{shortCode}")
     public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
         String targetUrl = urlService.getTargetUrl(shortCode);
         return ResponseEntity.status(HttpStatus.FOUND)

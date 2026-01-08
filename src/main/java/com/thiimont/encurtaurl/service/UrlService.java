@@ -107,7 +107,7 @@ public class UrlService {
 
             try {
                 urlRepository.save(url);
-                return new UrlResponseDTO(url.getUuid(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/" + shortCode, url.getCreatedAt());
+                return new UrlResponseDTO(url.getUuid(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/u/" + shortCode, url.getCreatedAt());
             } catch(DataIntegrityViolationException ignored) {}
         }
 
@@ -127,7 +127,7 @@ public class UrlService {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
         Page<Url> urlPage = urlRepository.findAllByUserUuid(uuidUser, pageable);
 
-        return urlPage.map(u -> new UrlResponseDTO(u.getUuid(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/" + u.getShortCode(), u.getCreatedAt()));
+        return urlPage.map(u -> new UrlResponseDTO(u.getUuid(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/u/" + u.getShortCode(), u.getCreatedAt()));
     }
 
     public void deleteUrl(UUID uuidUser, UUID uuidUrl) {
