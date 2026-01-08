@@ -9,11 +9,14 @@ import com.thiimont.encurtaurl.exception.ResourceCreationException;
 import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,6 @@ public class AuthService {
         newUser.setPassword(passwordEncoder.encode(request.password()));
 
         userRepository.save(newUser);
-        return new RegisterResponseDTO(request.name(), request.username());
+        return new RegisterResponseDTO(LocalDateTime.now(), HttpStatus.CREATED.name(), "Usuário registrado com sucesso.");
     }
 }
