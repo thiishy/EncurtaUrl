@@ -44,7 +44,13 @@ public class UrlService {
 
     private URI parseUriAndNormalize(String targetUrl) {
         try {
-            URI uri = new URI(targetUrl);
+            URI uri;
+
+            if (!targetUrl.matches("(?i)^https?://.*")) {
+                uri = new URI("https://" + targetUrl);
+            } else {
+                uri = new URI(targetUrl.replaceFirst("(?i)^https?://", "https://"));
+            }
 
             if (uri.getUserInfo() != null) throw new InvalidUrlException();
 
@@ -90,18 +96,16 @@ public class UrlService {
         User user = userRepository.findByUuid(uuidUser)
                 .orElseThrow(() -> new AccessDeniedException("Acesso negado."));
 
-        URI normalizedUri = parseUriAndNormalize(targetUrl);
+        String normalizedUri = parseUriAndNormalize(targetUrl).toString().trim();
 
-        if (!isValidUrl(normalizedUri.toString())) {
-            throw new InvalidUrlException();
-        }
+        if (!isValidUrl(normalizedUri)) throw new InvalidUrlException();
 
         // O loop é justificável, isso nunca vai passar de 1 tentativa (mas é sempre bom se precaver)
         while(true) {
             String shortCode = generateShortCode();
 
             Url url = new Url();
-            url.setTargetUrl(normalizedUri.toString());
+            url.setTargetUrl(normalizedUri);
             url.setShortCode(shortCode);
             url.setUser(user);
 
