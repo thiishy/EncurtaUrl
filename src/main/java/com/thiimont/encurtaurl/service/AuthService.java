@@ -5,6 +5,7 @@ import com.thiimont.encurtaurl.dto.request.LoginRequestDTO;
 import com.thiimont.encurtaurl.dto.request.RegisterRequestDTO;
 import com.thiimont.encurtaurl.dto.response.LoginResponseDTO;
 import com.thiimont.encurtaurl.dto.response.RegisterResponseDTO;
+import com.thiimont.encurtaurl.exception.ResourceCreationException;
 import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class AuthService {
     }
 
     public RegisterResponseDTO registerUser(RegisterRequestDTO request) {
-        if(!request.password().equals(request.confirmPassword())) throw new IllegalArgumentException("As senhas não coincidem.");
+        if(!request.password().equals(request.confirmPassword())) throw new ResourceCreationException("As senhas não coincidem.");
 
         User newUser = new User();
         newUser.setName(request.name());

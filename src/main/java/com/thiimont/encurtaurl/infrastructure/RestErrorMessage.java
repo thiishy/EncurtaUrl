@@ -1,5 +1,5 @@
 package com.thiimont.encurtaurl.infrastructure;
 
-import org.springframework.http.HttpStatus;
+import java.time.LocalDateTime;
 
-public record RestErrorMessage(HttpStatus status, String message) {}
+public record RestErrorMessage(LocalDateTime timestamp, String status, String message) {}
