@@ -7,14 +7,13 @@ import com.thiimont.encurtaurl.dto.response.RegisterResponseDTO;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import com.thiimont.encurtaurl.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,8 +24,11 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
-        LoginResponseDTO response = authService.authenticateUser(request);
+    public ResponseEntity<LoginResponseDTO> login(@CookieValue(value = "token", required = false) String tokenCookie,
+                                                  @Valid @RequestBody LoginRequestDTO request,
+                                                  HttpServletRequest httpRequest,
+                                                  HttpServletResponse httpResponse) {
+        LoginResponseDTO response = authService.authenticateUser(tokenCookie, request, httpRequest, httpResponse);
         return ResponseEntity.ok().body(response);
     }
 
