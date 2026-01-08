@@ -51,9 +51,8 @@
    - **DB_URL**: URL da conexão JDBC com o banco de dados. Não use `localhost`, use `db` para referenciar o banco de dados. *(ex: jdbc:postgresql://db/db_sistema)*
    - **ENCURTAURL_BASE_URL**: A URL base do seu servidor. Deve estar no formato correto, essa vai ser a URL apresentada pela API junto com o código curto após o encurtamento. *(ex: https://google.com, http://127.0.0.1:8080)*
    - **JWT_SECRET**: Segredo JWT de 256 bits, [**NÃO VAZE**](https://security.stackexchange.com/a/239895) e rotacione sempre que puder! *(ex: LzR7ceG3a1BhjQLzxvmxo2GqSuoSr7d3rAw1XGkgss9NJTL7i68btNlMGo6F6jyO)*
-4. Exporte as variáveis da sua .env para o seu ambiente
-5. Ainda na raiz do repositório, rode o comando `docker-compose up --build` e aguarde
-6. Após a build, a aplicação irá inicializar automaticamente. Você pode parar os serviços com `docker-compose stop` ou apagar os containers com `docker-compose down` (**não apaga** os volumes) ou `docker-compose down -v` (**apaga** os volumes)
+4. Ainda na raiz do repositório, rode o comando `docker-compose up --build` e aguarde
+5. Após a build, a aplicação irá inicializar automaticamente. Você pode parar os serviços com `docker-compose stop` ou apagar os containers com `docker-compose down` (**não apaga** os volumes) ou `docker-compose down -v` (**apaga** os volumes)
 
 ## 📍 Lista de endpoints da API
 
@@ -67,16 +66,35 @@
 *   **Método:** `POST`
 *   **Caminho:** `/auth/login`
 *   **Descrição:** Endpoint de autenticação de usuários.
+*   **Exemplo de requisição:**
+
+       ```json
+            {
+                "username": "teste@teste.com",
+                "password": "testando"
+            }
+    
 *   **Resposta:**
-    *   `200 OK`
+    *   `200 OK` *(sucesso)*
  
 ### 2. Registro
 
 *   **Método:** `POST`
 *   **Caminho:** `/auth/register`
 *   **Descrição:** Endpoint de registro de usuários.
-*   **Resposta:**
-    *   `200 OK`
+*   **Exemplo de requisição:**
+
+       ```json
+            {
+                 "name": "Conta Teste",
+                 "username": "teste@teste.com",
+                 "password": "testando",
+                 "confirmPassword": "testando"
+            }
+    
+*   **Respostas:**
+    *   `200 OK` *(sucesso)*
+    *   `422 Unprocessable Entity` *(dados inválidos)*
    
 </details>
 
@@ -86,12 +104,23 @@
 ### 1. Listar todas as URLs do usuário [🔒]
 
 *   **Método:** `GET`
-*   **Caminho:** `/me/urls?page=0 (padrão: 0)`
+*   **Caminho:** `/me/urls?page=0 (opcional, padrão: 0)`
 *   **Descrição:** Lista todas as URLs registradas/encurtadas divididas em páginas com 10 registros cada por padrão.
-*   **Resposta:**
-    *   `200 OK`
+*   **Respostas:**
+    *   `200 OK` *(sucesso)*
+    *   `401 Unauthorized` *(não autorizado)*
 
-### 2. Registrar/encurtar uma URL [🔒]
+### 2. Excluir uma URL encurtada [🔒]
+
+*   **Método:** `DELETE`
+*   **Caminho:** `/me/urls/delete/{uuid}`
+*   **Descrição:** Recebe o UUID da URL encurtada e realiza a exclusão caso ela exista.
+*   **Respostas:**
+    *   `204 No Content` *(sucesso)*
+    *   `404 Not Found` *(URL não encontrada ou pertence a outro usuário)*
+    *   `401 Unauthorized` *(não autorizado)*
+
+### 3. Registrar/encurtar uma URL [🔒]
 
 *   **Método:** `POST`
 *   **Caminho:** `/me/shorten`
@@ -103,23 +132,18 @@
                 "targetUrl": "https://google.com"
             }
     
-*   **Resposta:**
-    *   `201 Created`
-
-### 3. Excluir uma URL encurtada [🔒]
-
-*   **Método:** `DELETE`
-*   **Caminho:** `/me/delete/{uuid}`
-*   **Descrição:** Recebe o UUID da URL encurtada e realiza a exclusão caso ela exista.
-*   **Resposta:**
-    *   `204 No Content`
+*   **Respostas:**
+    *   `201 Created` *(sucesso)*
+    *   `400 Bad Request` *(URL inválida)*
+    *   `401 Unauthorized` *(não autorizado)*
 
 ### 4. Redirecionamento
 
 *   **Método:** `GET`
-*   **Caminho:** `/{shortCode}`
-*   **Resposta:**
-    *   `302 Found`
+*   **Caminho:** `/u/{shortCode}`
+*   **Respostas:**
+    *   `302 Found` *(sucesso)*
+    *   `410 Gone` *(URL marcada como inativa)*
 
 </details>
 
