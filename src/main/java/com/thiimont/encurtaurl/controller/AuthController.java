@@ -6,8 +6,8 @@ import com.thiimont.encurtaurl.dto.response.LoginResponseDTO;
 import com.thiimont.encurtaurl.dto.response.RegisterResponseDTO;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import com.thiimont.encurtaurl.service.AuthService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Auth", description = "Endpoints relacionados ao login e registro de usuários")
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserRepository userRepository;
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@CookieValue(value = "token", required = false) String tokenCookie,
+    public ResponseEntity<LoginResponseDTO> login(@CookieValue(value = "token", required = false) @Parameter(hidden = true) String tokenCookie,
                                                   @Valid @RequestBody LoginRequestDTO request,
-                                                  HttpServletRequest httpRequest,
                                                   HttpServletResponse httpResponse) {
-        LoginResponseDTO response = authService.authenticateUser(tokenCookie, request, httpRequest, httpResponse);
+        LoginResponseDTO response = authService.authenticateUser(tokenCookie, request, httpResponse);
         return ResponseEntity.ok().body(response);
     }
 
