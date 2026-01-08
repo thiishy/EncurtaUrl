@@ -25,7 +25,7 @@ public class UrlController {
         this.urlService = urlService;
     }
 
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "cookieAuth")
     @GetMapping("/me/urls")
     public ResponseEntity<Page<UrlResponseDTO>> listUrls(@AuthenticationPrincipal UUID uuidUser,
                                                          @RequestParam(defaultValue = "0") int page) {
@@ -33,7 +33,7 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "cookieAuth")
     @DeleteMapping("/me/urls/delete/{uuid}")
     public ResponseEntity<UrlResponseDTO> deleteUrl(@AuthenticationPrincipal UUID uuidUser,
                                                     @PathVariable UUID uuid) {
@@ -41,7 +41,7 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "cookieAuth")
     @PostMapping("/me/shorten")
     public ResponseEntity<UrlResponseDTO> registerUrl(@AuthenticationPrincipal UUID uuidUser,
                                                       @RequestBody @Valid UrlRequestDTO request) {
