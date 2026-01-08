@@ -1,8 +1,8 @@
 package com.thiimont.encurtaurl.service;
 
-import com.thiimont.encurtaurl.configuration.UrlConfig;
 import com.thiimont.encurtaurl.dto.response.UrlResponseDTO;
 import com.thiimont.encurtaurl.exception.InactiveUrlException;
+import com.thiimont.encurtaurl.exception.ResourceCreationException;
 import com.thiimont.encurtaurl.model.Url;
 import com.thiimont.encurtaurl.model.UrlStatus;
 import com.thiimont.encurtaurl.model.User;
@@ -33,7 +33,6 @@ import java.util.UUID;
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UserRepository userRepository;
-    private final UrlConfig urlConfig;
     private final SecureRandom secureRandom;
     private final UrlValidator urlValidator;
 
@@ -41,6 +40,15 @@ public class UrlService {
     private static final int LENGTH = 6;
 
     private static final int PAGE_SIZE = 10;
+
+    private String getUrlAuthority(String baseUrl) {
+        try {
+            URL url = new URL(baseUrl);
+            return "https://" + url.getAuthority();
+        } catch(MalformedURLException e) {
+            throw new ResourceCreationException();
+        }
+    }
 
     private URI parseUriAndNormalize(String targetUrl) {
         try {
@@ -92,7 +100,7 @@ public class UrlService {
                 .collect(Collectors.joining());
     }
 
-    public UrlResponseDTO shortenUrl(UUID uuidUser, String targetUrl) {
+    public UrlResponseDTO shortenUrl(UUID uuidUser, String targetUrl, String baseUrl) {
         User user = userRepository.findByUuid(uuidUser)
                 .orElseThrow(() -> new AccessDeniedException("Acesso negado."));
 
@@ -111,7 +119,7 @@ public class UrlService {
 
             try {
                 urlRepository.save(url);
-                return new UrlResponseDTO(url.getUuid(), url.getTargetUrl(), urlConfig.getBaseUrl() + "/u/" + shortCode, url.getCreatedAt());
+                return new UrlResponseDTO(url.getUuid(), url.getTargetUrl(), getUrlAuthority(baseUrl) + "/u/" + shortCode, url.getCreatedAt());
             } catch(DataIntegrityViolationException ignored) {}
         }
 
@@ -126,11 +134,11 @@ public class UrlService {
                 .orElseThrow(UrlNotFoundException::new);
     }
 
-    public Page<UrlResponseDTO> getAllUrls(UUID uuidUser, int page) {
+    public Page<UrlResponseDTO> getAllUrls(UUID uuidUser, int page, String baseUrl) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
         Page<Url> urlPage = urlRepository.findAllByUserUuid(uuidUser, pageable);
 
-        return urlPage.map(u -> new UrlResponseDTO(u.getUuid(), u.getTargetUrl(), urlConfig.getBaseUrl() + "/u/" + u.getShortCode(), u.getCreatedAt()));
+        return urlPage.map(u -> new UrlResponseDTO(u.getUuid(), u.getTargetUrl(), getUrlAuthority(baseUrl) + "/u/" + u.getShortCode(), u.getCreatedAt()));
     }
 
     public void deleteUrl(UUID uuidUser, UUID uuidUrl) {
