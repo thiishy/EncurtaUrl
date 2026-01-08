@@ -114,9 +114,8 @@ public class UrlService {
     }
 
     public String getTargetUrl(String shortCode) {
-        if(!urlRepository.existsByShortCodeAndStatus(shortCode, UrlStatus.ACTIVE)) {
-            throw new InactiveUrlException();
-        }
+        if(!urlRepository.existsByShortCode(shortCode)) throw new UrlNotFoundException();
+        if(!urlRepository.existsByStatus(UrlStatus.ACTIVE)) throw new InactiveUrlException();
 
         return urlRepository.findByShortCode(shortCode)
                 .map(Url::getTargetUrl)
