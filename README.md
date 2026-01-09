@@ -29,14 +29,13 @@
 2. Configure o banco de dados
 3. Clone o repositório (pelo website ou com o comando `git clone https://github.com/thiishy/EncurtaUrl.git` caso tenha instalado o Git)
 4. Na raiz do repositório, crie um arquivo **.env** seguindo o template que está no arquivo **.env.example**:
-   - **DB_NAME**: Nome do banco de dados
-   - **DB_USERNAME**: Nome do seu usuário no banco de dados
-   - **DB_PASSWORD**: Senha do seu usuário no banco de dados
-   - **DB_URL**: URL da conexão JDBC com o banco de dados *(ex: jdbc:postgresql://localhost/db_sistema)*
-   - **ENCURTAURL_BASE_URL**: A URL base do seu servidor. Deve estar no formato correto, essa vai ser a URL apresentada pela API junto com o código curto após o encurtamento. *(ex: https://google.com, http://127.0.0.1:8080)*
-   - **JWT_SECRET**: Segredo JWT de 256 bits, [**NÃO VAZE**](https://security.stackexchange.com/a/239895) e rotacione sempre que puder! *(ex: LzR7ceG3a1BhjQLzxvmxo2GqSuoSr7d3rAw1XGkgss9NJTL7i68btNlMGo6F6jyO)*
+    - **DB_NAME**: Nome do banco de dados
+    - **DB_USERNAME**: Nome do seu usuário no banco de dados
+    - **DB_PASSWORD**: Senha do seu usuário no banco de dados
+    - **DB_URL**: URL da conexão JDBC com o banco de dados *(ex: jdbc:postgresql://localhost/db_sistema)*
+    - **JWT_SECRET**: Segredo JWT de 256 bits, [**NÃO VAZE**](https://security.stackexchange.com/a/239895) e rotacione sempre que puder! *(ex: LzR7ceG3a1BhjQLzxvmxo2GqSuoSr7d3rAw1XGkgss9NJTL7i68btNlMGo6F6jyO)*
 5. Rode o comando `mvn clean install` para fazer a build do projeto
-6. Para inicializar a aplicação, rode `mvn spring-boot:run` e a aplicação irá inicializar
+6. Para inicializar a aplicação, rode `mvn spring-boot:run` e a aplicação irá inicializar e escutar na porta 8080
 
 > [!NOTE]
 > Se você decidir fazer a build do projeto com o banco de dados desligado, use o parâmetro `-DskipTests` no comando para evitar erros de build.
@@ -44,13 +43,12 @@
 ### O caminho fácil (com Docker)
 1. Instale o Docker e o Docker Compose
 2. Clone o repositório (pelo website ou com o comando `git clone https://github.com/thiishy/EncurtaUrl.git` caso tenha instalado o Git)
-3. Na raiz do repositório, crie um arquivo **.env** seguindo o template que está no arquivo **.env.example**. Note que o banco de dados será **configurado automaticamente** pelo Docker Compose com os dados que você escolher aqui:
-   - **DB_NAME**: Nome do banco de dados
-   - **DB_USERNAME**: Nome do seu usuário no banco de dados
-   - **DB_PASSWORD**: Senha do seu usuário no banco de dados
-   - **DB_URL**: URL da conexão JDBC com o banco de dados. Não use `localhost`, use `db` para referenciar o banco de dados. *(ex: jdbc:postgresql://db/db_sistema)*
-   - **ENCURTAURL_BASE_URL**: A URL base do seu servidor. Deve estar no formato correto, essa vai ser a URL apresentada pela API junto com o código curto após o encurtamento. *(ex: https://google.com, http://127.0.0.1:8080)*
-   - **JWT_SECRET**: Segredo JWT de 256 bits, [**NÃO VAZE**](https://security.stackexchange.com/a/239895) e rotacione sempre que puder! *(ex: LzR7ceG3a1BhjQLzxvmxo2GqSuoSr7d3rAw1XGkgss9NJTL7i68btNlMGo6F6jyO)*
+3. Na raiz do repositório, crie um arquivo **.env** seguindo o template que está no arquivo **.env.example**. Note que o banco de dados será **configurado automaticamente** pelo Docker Compose com os dados que você escolher aqui e escutará na porta padrão (5432):
+    - **DB_NAME**: Nome do banco de dados
+    - **DB_USERNAME**: Nome do seu usuário no banco de dados
+    - **DB_PASSWORD**: Senha do seu usuário no banco de dados
+    - **DB_URL**: URL da conexão JDBC com o banco de dados. Não use `localhost`, use `db` para referenciar o banco de dados. *(ex: jdbc:postgresql://db/db_sistema)*
+    - **JWT_SECRET**: Segredo JWT de 256 bits, [**NÃO VAZE**](https://security.stackexchange.com/a/239895) e rotacione sempre que puder! *(ex: LzR7ceG3a1BhjQLzxvmxo2GqSuoSr7d3rAw1XGkgss9NJTL7i68btNlMGo6F6jyO)*
 4. Ainda na raiz do repositório, rode o comando `docker-compose up --build` e aguarde
 5. Após a build, a aplicação irá inicializar automaticamente. Você pode parar os serviços com `docker-compose stop` ou apagar os containers com `docker-compose down` (**não apaga** os volumes) ou `docker-compose down -v` (**apaga** os volumes)
 
