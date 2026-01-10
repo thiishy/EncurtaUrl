@@ -126,12 +126,14 @@ public class UrlService {
     }
 
     public String getTargetUrl(String shortCode) {
-        if(!urlRepository.existsByShortCode(shortCode)) throw new UrlNotFoundException();
-        if(!urlRepository.existsByStatus(UrlStatus.ACTIVE)) throw new InactiveUrlException();
-
-        return urlRepository.findByShortCode(shortCode)
-                .map(Url::getTargetUrl)
+        Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(UrlNotFoundException::new);
+
+        if(url.getStatus() != UrlStatus.ACTIVE) {
+            throw new InactiveUrlException();
+        }
+
+        return url.getTargetUrl();
     }
 
     public Page<UrlResponseDTO> getAllUrls(UUID uuidUser, int page, String baseUrl) {
