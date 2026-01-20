@@ -167,13 +167,15 @@
 
 Projeto inicializado com Maven - confira o **pom.xml** para mais detalhes.
 
-## 📋 A fazer
-- [X] Dockerfile
-- [X] Autenticação
-- [ ] Caching
-- [ ] Rate limiting
+## 📋 Próximos passos (fora do escopo do MVP)
 
-*Aceito sugestões!*
+Este projeto foi finalizado como um MVP para fins de estudo e portfólio.
+
+Os itens abaixo representam possíveis evoluções pensando em um cenário de produção real.
+
+- **Caching**: melhorar a performance em alto volume de requisições
+- **Rate limiting**: proteção contra abuso
+- **Observabilidade**: logs e métricas
 
 ---
 
