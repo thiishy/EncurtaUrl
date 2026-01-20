@@ -36,12 +36,14 @@ public class UrlService {
     private final SecureRandom secureRandom;
     private final UrlValidator urlValidator;
 
-    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final int LENGTH = 6;
+    private static final int MAX_SHORTCODE_ATTEMPTS = 5;
+
+    private static final String SHORTCODE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int SHORTCODE_LENGTH = 6;
 
     private static final int PAGE_SIZE = 10;
 
-    private String getUrlAuthority(String baseUrl) {
+    private String getUrlHostAndPort(String baseUrl) {
         try {
             URL url = new URL(baseUrl);
             return "https://" + url.getAuthority();
@@ -94,22 +96,24 @@ public class UrlService {
     }
 
     private String generateShortCode() {
-        return IntStream.generate(() -> secureRandom.nextInt(ALPHABET.length()))
-                .limit(LENGTH)
-                .mapToObj(i -> String.valueOf(ALPHABET.charAt(i)))
+        return IntStream.generate(() -> secureRandom.nextInt(SHORTCODE_ALPHABET.length()))
+                .limit(SHORTCODE_LENGTH)
+                .mapToObj(i -> String.valueOf(SHORTCODE_ALPHABET.charAt(i)))
                 .collect(Collectors.joining());
     }
 
     public UrlResponseDTO shortenUrl(UUID uuidUser, String targetUrl, String baseUrl) {
+        int attempts = 0;
+
         User user = userRepository.findByUuid(uuidUser)
                 .orElseThrow(() -> new AccessDeniedException("Acesso negado."));
 
         String normalizedUri = parseUriAndNormalize(targetUrl).toString().trim();
-
         if (!isValidUrl(normalizedUri)) throw new InvalidUrlException();
 
-        // O loop é justificável, isso nunca vai passar de 1 tentativa (mas é sempre bom se precaver)
-        while(true) {
+        while (attempts < MAX_SHORTCODE_ATTEMPTS) {
+            attempts++;
+
             String shortCode = generateShortCode();
 
             Url url = new Url();
@@ -119,10 +123,17 @@ public class UrlService {
 
             try {
                 urlRepository.save(url);
-                return new UrlResponseDTO(url.getUuid(), url.getTargetUrl(), getUrlAuthority(baseUrl) + "/u/" + shortCode, url.getCreatedAt());
-            } catch(DataIntegrityViolationException ignored) {}
+
+                return new UrlResponseDTO(
+                        url.getUuid(),
+                        url.getTargetUrl(),
+                        getUrlHostAndPort(baseUrl) + "/u/" + shortCode,
+                        url.getCreatedAt()
+                );
+            } catch (DataIntegrityViolationException ignored) {}
         }
 
+        throw new ResourceCreationException("Não foi possível gerar um shortCode único após 5 tentativas.");
     }
 
     public String getTargetUrl(String shortCode) {
@@ -140,7 +151,12 @@ public class UrlService {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
         Page<Url> urlPage = urlRepository.findAllByUserUuid(uuidUser, pageable);
 
-        return urlPage.map(u -> new UrlResponseDTO(u.getUuid(), u.getTargetUrl(), getUrlAuthority(baseUrl) + "/u/" + u.getShortCode(), u.getCreatedAt()));
+        return urlPage.map(u ->
+                new UrlResponseDTO(
+                        u.getUuid(),
+                        u.getTargetUrl(),
+                        getUrlHostAndPort(baseUrl) + "/u/" + u.getShortCode(),
+                        u.getCreatedAt()));
     }
 
     public void deleteUrl(UUID uuidUser, UUID uuidUrl) {
