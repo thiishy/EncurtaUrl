@@ -9,6 +9,7 @@ import com.thiimont.encurtaurl.exception.ResourceCreationException;
 import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,6 +35,7 @@ public class AuthService {
         User user = (User) authentication.getPrincipal();
         String token = tokenConfig.generateToken(user);
 
+        log.info("Usuário com UUID '{}' realizou o login.", user.getUuid());
         return new LoginResponseDTO(token);
     }
 
@@ -45,6 +48,7 @@ public class AuthService {
         newUser.setPassword(passwordEncoder.encode(request.password()));
 
         userRepository.save(newUser);
+        log.info("Usuário com UUID '{}' se registrou.", newUser.getUuid());
         return new RegisterResponseDTO(LocalDateTime.now(), HttpStatus.CREATED.name(), "Usuário registrado com sucesso.");
     }
 }
