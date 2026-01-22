@@ -52,6 +52,12 @@
 4. Ainda na raiz do repositório, rode o comando `docker-compose up --build` e aguarde
 5. Após a build, a aplicação irá inicializar automaticamente. Você pode parar os serviços com `docker-compose stop` ou apagar os containers com `docker-compose down` (**não apaga** os volumes) ou `docker-compose down -v` (**apaga** os volumes)
 
+## 🛠️ Funcionalidades
+- Login e cadastro de usuários
+- Encurtar URLs
+- Listar URLs encurtadas
+- Apagar URLs encurtadas
+
 ## 📍 Lista de endpoints da API
 
 🔒 significa que o endpoint requer **autorização** por meio de um token JWT válido no cabeçalho da requisição. *(ex: Authorization: Bearer eyJhbGciOiJIUzI1NiIs...)*
@@ -74,6 +80,7 @@
     
 *   **Resposta:**
     *   `200 OK` *(sucesso)*
+    *   `401 Unauthorized` *(falha no login)*
  
 ### 2. Registro
 
