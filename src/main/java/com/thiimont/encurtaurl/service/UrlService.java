@@ -9,6 +9,7 @@ import com.thiimont.encurtaurl.model.User;
 import com.thiimont.encurtaurl.repository.UrlRepository;
 import com.thiimont.encurtaurl.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -30,16 +31,16 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UserRepository userRepository;
     private final SecureRandom secureRandom;
     private final UrlValidator urlValidator;
 
-    private static final int MAX_SHORTCODE_ATTEMPTS = 5;
-
     private static final String SHORTCODE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int SHORTCODE_LENGTH = 6;
+    private static final int MAX_SHORTCODE_ATTEMPTS = 5;
 
     private static final int PAGE_SIZE = 10;
 
@@ -103,10 +104,10 @@ public class UrlService {
     }
 
     public UrlResponseDTO shortenUrl(UUID uuidUser, String targetUrl, String baseUrl) {
-        int attempts = 0;
-
         User user = userRepository.findByUuid(uuidUser)
                 .orElseThrow(() -> new AccessDeniedException("Acesso negado."));
+
+        int attempts = 0;
 
         String normalizedUri = parseUriAndNormalize(targetUrl).toString().trim();
         if (!isValidUrl(normalizedUri)) throw new InvalidUrlException();
@@ -130,7 +131,9 @@ public class UrlService {
                         getUrlHostAndPort(baseUrl) + "/u/" + shortCode,
                         url.getCreatedAt()
                 );
-            } catch (DataIntegrityViolationException ignored) {}
+            } catch (DataIntegrityViolationException ex) {
+                log.warn("Erro ao encurtar a URL '{}', tentando novamente: {}/{}", normalizedUri, attempts, MAX_SHORTCODE_ATTEMPTS);
+            }
         }
 
         throw new ResourceCreationException("Não foi possível gerar um shortCode único após 5 tentativas.");
